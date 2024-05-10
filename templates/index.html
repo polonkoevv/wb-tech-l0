@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>WB-Tech L0 </title>
+</head>
+<body>
+    <h1>Информация о заказах:</h1>
+    <nav>
+        <button id="GetAll">Получить все заказы</button>
+        <label for="orderUidInput" style="display: none;"></label>
+        <input type="text" id="orderUidInput" placeholder="Введите UID заказа">        
+        <button id="Get">Получить заказ</button>
+    </nav>
+
+    <pre id="orders" style="display: none;" class="orders">
+        
+    </pre>
+
+    <div class="error" id="error" style="display: none;">
+        
+    </div>
+
+
+    <script>
+        const getAllBtn = document.querySelector('#GetAll')
+        const ordersBlock = document.querySelector('#orders')
+        const ordersInput = document.querySelector('#orderUidInput')
+        const GetBtn = document.querySelector('#Get')
+        const errorBlock = document.querySelector("#error")
+
+        getAllBtn.addEventListener('click', async function(){
+            errorBlock.style.display = 'none'
+            ordersBlock.style.display = 'block'
+            ordersBlock.textContent = ""
+            let response = await fetch("http://localhost:8080/order")
+            let orders = await response.json()
+
+            ordersBlock.textContent = JSON.stringify(orders, undefined, 4)
+
+        })
+
+        GetBtn.addEventListener('click', async function(){
+            errorBlock.style.display = 'none'
+            let uid = ordersInput.value;
+            if (uid != "" && uid != null){
+                console.log(uid)
+                ordersBlock.style.display = 'block'
+                ordersBlock.textContent = ""
+                let response = await fetch(`http://localhost:8080/order/${uid}`)
+
+                if (response.status == 204){
+                    ordersBlock.style.display = 'none'
+                    errorBlock.textContent = "Заказа по запрашиваемому Вами UID нет."
+                    errorBlock.style.display = 'block'
+                    return
+                }                
+
+                let orders = await response.json()
+
+                ordersBlock.textContent = JSON.stringify(orders, undefined, 4)
+            }
+        })
+
+        
+
+    </script>
+
+</body>
+</html>
